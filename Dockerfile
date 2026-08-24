@@ -1,6 +1,15 @@
-ARG TARGETARCH=amd64
-# --platform=$BUILDPLATFORM: always run this stage on the build host's native arch and let
-# the bundled cross-toolchain target aarch64/etc, instead of emulating the target arch.
+ARG TARGETARCH
+# ^ no default value here: giving it one (e.g. "=amd64") sticks and silently overrides
+# buildx's real per-platform value for every leg of a multi-platform build, producing
+# amd64 binaries even when building linux/arm64. Confirmed via `docker buildx imagetools`/
+# `file` on the extracted binary before this fix was found.
+
+# Each arch gets its own named stage (pinned to run on the build host natively via
+# rust-musl-cross's cross-toolchain). TARGETARCH only resolves to the real target arch in a
+# FROM with no --platform pin of its own, so select between them with a plain FROM below
+# instead of substituting ${TARGETARCH} directly into a --platform=$BUILDPLATFORM FROM
+# (that resolved to the build host's arch for every leg, silently producing amd64 binaries
+# even when building for linux/arm64).
 FROM --platform=$BUILDPLATFORM ghcr.io/rust-cross/rust-musl-cross:${TARGETARCH}-musl AS builder
 
 WORKDIR /app
