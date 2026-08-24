@@ -14,6 +14,8 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(dashboard::dashboard))
         .route("/partials/dashboard", get(dashboard::dashboard_partial))
+        .route("/static/css/app.css", get(crate::assets::app_css))
+        .route("/static/js/htmx.min.js", get(crate::assets::htmx_js))
         .route(
             "/settings/endpoints",
             get(endpoints::list_page).post(endpoints::create),

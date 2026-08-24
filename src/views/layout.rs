@@ -11,7 +11,7 @@ pub fn page(title: &str, content: Markup) -> Markup {
                 meta name="viewport" content="width=device-width, initial-scale=1";
                 title { (title) " · StatusWatch" }
                 link rel="stylesheet" href="/static/css/app.css";
-                script src="https://unpkg.com/htmx.org@2.0.4" {}
+                script src="/static/js/htmx.min.js" {}
             }
             body class="bg-slate-50 text-slate-900 min-h-screen" {
                 (nav())

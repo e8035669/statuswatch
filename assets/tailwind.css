@@ -1,5 +1,6 @@
-/* Rebuild static/css/app.css after changing classes in src/**/*.rs:
-   tailwindcss -i ./assets/tailwind.css -o ./static/css/app.css --minify
-   (Tailwind v4 CLI; no npm needed — download the standalone binary from
-   https://github.com/tailwindlabs/tailwindcss/releases if not installed.) */
+/* Rebuild static/css/app.css after changing classes in any .rs file under src, or to
+   bump htmx/Tailwind versions: run scripts/update-frontend-assets.sh (downloads a pinned
+   htmx build + the standalone Tailwind v4 CLI, no npm needed), then review/commit the
+   diff under static/. Do NOT run this automatically in build.rs; see the header comment
+   in that script for why. */
 @import "tailwindcss";

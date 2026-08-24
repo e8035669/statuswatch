@@ -1,8 +1,8 @@
 use anyhow::Result;
-use tower_http::services::ServeDir;
 
 use crate::state::AppState;
 
+mod assets;
 mod components;
 mod db;
 mod entities;
@@ -26,9 +26,7 @@ async fn main() -> Result<()> {
         client: state::build_client()?,
     };
 
-    let app = views::router()
-        .with_state(state.clone())
-        .nest_service("/static", ServeDir::new("static"));
+    let app = views::router().with_state(state.clone());
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
     let server = axum::serve(listener, app);
 
