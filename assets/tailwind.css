@@ -1,0 +1,5 @@
+/* Rebuild static/css/app.css after changing classes in src/**/*.rs:
+   tailwindcss -i ./assets/tailwind.css -o ./static/css/app.css --minify
+   (Tailwind v4 CLI; no npm needed — download the standalone binary from
+   https://github.com/tailwindlabs/tailwindcss/releases if not installed.) */
+@import "tailwindcss";
