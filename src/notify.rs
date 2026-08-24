@@ -155,8 +155,14 @@ async fn record_attempt(
     sent_at: DateTime<Utc>,
 ) -> Result<()> {
     let (success, error) = match send_discord_webhook(&state.client, webhook_url, message).await {
-        Ok(()) => (true, None),
-        Err(e) => (false, Some(e.to_string())),
+        Ok(()) => {
+            tracing::info!("notification sent to {target_label} ({source}) for device {device_id}");
+            (true, None)
+        }
+        Err(e) => {
+            tracing::warn!("notification to {target_label} ({source}) for device {device_id} failed: {e:#}");
+            (false, Some(e.to_string()))
+        }
     };
 
     notify_history::ActiveModel {

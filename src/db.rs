@@ -1,11 +1,15 @@
 use anyhow::Result;
-use sea_orm::{ConnectionTrait, Database, DatabaseConnection, Schema};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database, DatabaseConnection, Schema};
 
 use crate::entities::{device_status, endpoint, notify_history, notify_target, project};
 
 pub async fn connect() -> Result<DatabaseConnection> {
     let url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://statuswatch.db?mode=rwc".to_string());
-    let db = Database::connect(url).await?;
+    let mut opt = ConnectOptions::new(url);
+    // sqlx's own query logging dumps every raw SQL statement at INFO; we log at a
+    // higher level ourselves, so turn it off here instead of via a noisy env filter.
+    opt.sqlx_logging(false);
+    let db = Database::connect(opt).await?;
     Ok(db)
 }
 

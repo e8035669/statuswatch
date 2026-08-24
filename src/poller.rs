@@ -17,6 +17,7 @@ use crate::utils::ApiHelper;
 const POLL_INTERVAL: Duration = Duration::from_secs(60);
 
 pub async fn poll_loop(state: AppState) -> Result<()> {
+    tracing::info!("poll loop starting, interval={POLL_INTERVAL:?}");
     loop {
         if let Err(e) = poll_once(&state).await {
             tracing::error!("poll cycle failed: {e:#}");
@@ -37,17 +38,22 @@ async fn poll_once(state: &AppState) -> Result<()> {
         .filter(project::Column::PollEnabled.eq(true))
         .all(&state.db)
         .await?;
+    let project_count = projects.len();
+    tracing::debug!("poll cycle starting, {project_count} project(s) enabled");
 
     let futs = projects.into_iter().filter_map(|p| {
         let endpoint_row = endpoints_by_id.get(&p.endpoint_id)?.clone();
         Some(poll_project(state, endpoint_row, p))
     });
 
+    let mut failed = 0;
     for result in futures_util::future::join_all(futs).await {
         if let Err(e) = result {
+            failed += 1;
             tracing::error!("project poll failed: {e:#}");
         }
     }
+    tracing::debug!("poll cycle finished, {project_count} project(s), {failed} failed");
 
     Ok(())
 }
@@ -125,6 +131,12 @@ async fn poll_device(
             am.update(&state.db).await?;
         }
         DiffResult::Changed { old_status } => {
+            tracing::info!(
+                "device {} ({}) status changed: {old_status} -> {new_status}",
+                device.id,
+                device.name,
+            );
+
             let mut am = existing.unwrap().into_active_model();
             am.status = Set(new_status.clone());
             am.last_data_time = Set(active_info.last_data_time.clone());
