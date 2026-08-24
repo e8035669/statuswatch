@@ -8,8 +8,8 @@ COPY assets ./assets
 COPY static ./static
 
 RUN cargo build --release && \
-    musl-strip target/x86_64-unknown-linux-musl/release/statuswatch && \
-    cp target/x86_64-unknown-linux-musl/release/statuswatch /statuswatch
+    musl-strip target/${CARGO_BUILD_TARGET}/release/statuswatch && \
+    cp target/${CARGO_BUILD_TARGET}/release/statuswatch /statuswatch
 
 FROM scratch
 COPY --from=builder /statuswatch /statuswatch
