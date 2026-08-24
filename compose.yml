@@ -1,7 +1,7 @@
 services:
   statuswatch:
     build: .
-    image: statuswatch:local
+    image: ghcr.io/e8035669/statuswatch:main
     ports:
       - "3000:3000"
     volumes:
