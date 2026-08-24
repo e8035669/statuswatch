@@ -1,0 +1,16 @@
+services:
+  statuswatch:
+    build: .
+    image: statuswatch:local
+    ports:
+      - "3000:3000"
+    volumes:
+      - statuswatch-data:/data
+    restart: unless-stopped
+    # Uncomment if this environment requires an outbound proxy to reach the IoT platform:
+    # environment:
+    #   HTTPS_PROXY: http://proxy.example.com:8080
+    #   NO_PROXY: localhost,127.0.0.1
+
+volumes:
+  statuswatch-data:

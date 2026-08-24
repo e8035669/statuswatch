@@ -4,7 +4,8 @@ use sea_orm::{ConnectionTrait, Database, DatabaseConnection, Schema};
 use crate::entities::{device_status, endpoint, notify_history, notify_target, project};
 
 pub async fn connect() -> Result<DatabaseConnection> {
-    let db = Database::connect("sqlite://statuswatch.db?mode=rwc").await?;
+    let url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://statuswatch.db?mode=rwc".to_string());
+    let db = Database::connect(url).await?;
     Ok(db)
 }
 
