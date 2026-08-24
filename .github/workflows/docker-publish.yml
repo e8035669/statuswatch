@@ -47,6 +47,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          # rust-musl-cross cross-compiles both from the amd64 runner (see
+          # --platform=$BUILDPLATFORM in the Dockerfile), so no QEMU/binfmt is needed here.
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
