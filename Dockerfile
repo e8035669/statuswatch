@@ -1,5 +1,5 @@
-FROM rust:1-alpine AS builder
-RUN apk add --no-cache musl-dev gcc g++ make cmake perl git pkgconfig linux-headers
+ARG TARGETARCH=amd64
+FROM ghcr.io/rust-cross/rust-musl-cross:${TARGETARCH}-musl AS builder
 
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
@@ -8,7 +8,8 @@ COPY assets ./assets
 COPY static ./static
 
 RUN cargo build --release && \
-    cp target/release/statuswatch /statuswatch
+    musl-strip target/x86_64-unknown-linux-musl/release/statuswatch && \
+    cp target/x86_64-unknown-linux-musl/release/statuswatch /statuswatch
 
 FROM scratch
 COPY --from=builder /statuswatch /statuswatch
