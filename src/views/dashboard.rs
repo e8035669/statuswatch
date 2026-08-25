@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use axum::extract::State;
+use chrono::SecondsFormat;
 use maud::{Markup, PreEscaped, html};
 use sea_orm::EntityTrait;
 
@@ -90,9 +91,9 @@ async fn render_status_table(state: &AppState) -> Result<Markup, AppError> {
             @let abnormal = devices.map(|devices| count_status(devices, "abnormal")).unwrap_or(0);
             details id=(format!("project-{}", p.id)) class="mb-6 bg-white rounded shadow" {
                 summary class="cursor-pointer p-4" {
-                    span class="inline-flex min-w-0 flex-nowrap items-center gap-3 align-middle" {
-                        span class="shrink-0 whitespace-nowrap text-lg font-semibold" { (ep_name) " / " (p.name) }
-                        span class="inline-flex min-w-0 flex-nowrap gap-2 overflow-x-auto whitespace-nowrap text-xs align-middle" {
+                    span class="whitespace-nowrap text-lg font-semibold" { (ep_name) " / " (p.name) }
+                    " "
+                    span class="inline-flex min-w-0 max-w-full flex-wrap gap-2 text-xs align-middle" {
                             span class="rounded-full bg-slate-50 text-slate-800 px-2 py-0.5 font-semibold" {
                                 "Total " (total)
                             }
@@ -114,7 +115,6 @@ async fn render_status_table(state: &AppState) -> Result<Markup, AppError> {
                             span class="rounded-full bg-gray-100 text-gray-800 px-2 py-0.5 font-semibold" {
                                 "Unset " (unset)
                             }
-                        }
                     }
                 }
                 div class="pl-8 pr-4 pb-4" {
@@ -140,8 +140,8 @@ async fn render_status_table(state: &AppState) -> Result<Markup, AppError> {
                                                 td class="py-1 pr-4 text-slate-500" {
                                                     (d.last_data_time.clone().unwrap_or_default())
                                                 }
-                                                td class="py-1 pr-4 text-slate-500" { (d.last_checked_at.to_rfc3339()) }
-                                                td class="text-slate-500" { (d.last_changed_at.to_rfc3339()) }
+                                                td class="py-1 pr-4 text-slate-500" { (d.last_checked_at.to_rfc3339_opts(SecondsFormat::Secs, true)) }
+                                                td class="text-slate-500" { (d.last_changed_at.to_rfc3339_opts(SecondsFormat::Secs, true)) }
                                             }
                                         }
                                     }

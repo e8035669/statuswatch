@@ -26,10 +26,14 @@ echo "==> Downloading htmx ${HTMX_VERSION}"
 curl -sL --fail -o static/js/htmx.min.js \
     "https://unpkg.com/htmx.org@${HTMX_VERSION}/dist/htmx.min.js"
 
-echo "==> Fetching Tailwind CLI ${TAILWIND_VERSION} (${tw_asset})"
 mkdir -p .tools
-curl -sL --fail -o .tools/tailwindcss \
-    "https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/${tw_asset}"
+if [[ -f .tools/tailwindcss ]]; then
+    echo "==> Using existing Tailwind CLI (${tw_asset})"
+else
+    echo "==> Fetching Tailwind CLI ${TAILWIND_VERSION} (${tw_asset})"
+    curl -sL --fail -o .tools/tailwindcss \
+        "https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/${tw_asset}"
+fi
 chmod +x .tools/tailwindcss
 
 echo "==> Building static/css/app.css"
